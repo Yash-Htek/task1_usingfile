@@ -1,19 +1,14 @@
 terraform {
-  required_providers {
-    snowflake = {
-      source  = "chanzuckerberg/snowflake"
-      version = "0.25.17"
-    }
+ backend "remote" {
+  organization = "your-organization-name"
+  
+  workspaces {
+    name = "your-workspace-name"
   }
+  hostname    = "app.terraform.io"
+  credentials = "~/.terraform.d/credentials.tfrc.json"
+}
 
-  backend "remote" {
-    organization = "Hoonartek"
-
-    workspaces {
-      name = "Task1-UsingFile"
-    }
-    token = var.TF_API_TOKEN
-  }
 }
 
 provider "snowflake" {
