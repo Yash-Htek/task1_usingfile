@@ -1,4 +1,4 @@
-name: "Snowflake Terraform Demo Workflow"
+name: Terraform Apply
 
 on:
   push:
@@ -6,38 +6,31 @@ on:
       - main
 
 jobs:
-  snowflake-terraform-demo:
-    name: "Snowflake Terraform Demo Job"
+  terraform:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set Variables
-        run: cp snowflake-secrets.env terraform-vars.env
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.14.9
+      id: terraform
 
-      - name: Show Variables
-        run: cat terraform-vars.env
+    - name: Set up environment variables
+      run: |
+        echo "TF_API_TOKEN=${{ secrets.TF_API_TOKEN }}" >> $GITHUB_ENV
+        echo "TF_VAR_SNOWFLAKE_USER=$(grep SNOWFLAKE_USER main.tfvars | cut -d= -f2)" >> $GITHUB_ENV
+        echo "TF_VAR_SNOWFLAKE_PASSWORD=$(grep SNOWFLAKE_PASSWORD main.tfvars | cut -d= -f2)" >> $GITHUB_ENV
+        echo "TF_VAR_SNOWFLAKE_ACCOUNT=$(grep SNOWFLAKE_ACCOUNT main.tfvars | cut -d= -f2)" >> $GITHUB_ENV
+        echo "TF_VAR_SNOWFLAKE_REGION=$(grep SNOWFLAKE_REGION main.tfvars | cut -d= -f2)" >> $GITHUB_ENV
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+    - name: Terraform Init
+      run: terraform init
 
-      - name: Terraform Format
-        id: fmt
-        run: terraform fmt -check
-
-      - name: Terraform Init
-        id: init
-        run: terraform init
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-
-      - name: Terraform Apply
-        id: apply
-        run: terraform apply -auto-approve
-        env:
-          TF_CLI_ARGS: "-var-file=terraform-vars.env"
+    - name: Terraform Apply
+      run: terraform apply -var-file=main.tfvars -auto-approve
+      env:
+        TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
