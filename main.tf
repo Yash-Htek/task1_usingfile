@@ -1,21 +1,22 @@
 terraform {
- backend "remote" {
-  organization = "your-organization-name"
-  
-  workspaces {
-    name = "your-workspace-name"
+  required_providers {
+    snowflake = {
+      source  = "chanzuckerberg/snowflake"
+      version = "0.25.17"
+    }
   }
-  hostname    = "app.terraform.io"
-  credentials = "~/.terraform.d/credentials.tfrc.json"
-}
 
+  backend "remote" {
+    organization = "Hoonartek"
+
+    workspaces {
+      name = "gh-actions-demo"
+    }
+  }
 }
 
 provider "snowflake" {
-  username   = var.SNOWFLAKE_USER
-  password   = var.SNOWFLAKE_PASSWORD
-  account    = var.SNOWFLAKE_ACCOUNT
-  region     = var.SNOWFLAKE_REGION
+
 }
 
 resource "snowflake_database" "demo_db" {
@@ -23,4 +24,8 @@ resource "snowflake_database" "demo_db" {
   comment = "Database for Snowflake Terraform demo"
 }
 
-// Additional resources and configurations can go here
+resource "snowflake_schema" "demo_schema" {
+  database = snowflake_database.demo_db.name
+  name     = "DEMO_SCHEMA"
+  comment  = "Schema for Snowflake Terraform demo"
+}
