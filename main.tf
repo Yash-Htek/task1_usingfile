@@ -12,6 +12,7 @@ terraform {
     workspaces {
       name = "Task1-UsingFile"
     }
+    token = var.TF_API_TOKEN
   }
 }
 
