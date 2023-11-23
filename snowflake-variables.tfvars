@@ -1,4 +1,4 @@
-SNOWFLAKE_ACCOUNT="av74281"
-SNOWFLAKE_PASSWORD="Htek@#1193"
-SNOWFLAKE_REGION="central-india.azure"
-SNOWFLAKE_USER="YASHGAJBHIYE"
+snowflake_account  = "av74281"
+snowflake_password = "Htek@#1193"
+snowflake_region   = "central-india.azure"
+snowflake_user     = "YASHGAJBHIYE"
